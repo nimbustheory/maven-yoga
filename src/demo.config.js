@@ -20,7 +20,7 @@ export const DEMO_CONFIG = {
     {
       title: "Admin Dashboard",
       description: "Real-time analytics for your Fremont studio. Track attendance across all five class types, monitor revenue, manage your teaching roster, and broadcast announcements. Everything a queer and BIPOC-owned studio needs to thrive.",
-      icon: "LayoutDashboard",
+      icon: "Shield",
     },
     {
       title: "Built for Maven Yoga",
