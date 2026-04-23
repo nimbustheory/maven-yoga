@@ -213,22 +213,27 @@ const AppContext = createContext(null);
 //  SHARED COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
-function PageHero({ image, title, subtitle }) {
+function PageHero({ image, title, subtitle, titleSize, variant = "default" }) {
   const [imgError, setImgError] = useState(false);
   const isUrl = image && image.startsWith("http");
   const showImage = isUrl && !imgError;
   const fallbackGradient = `linear-gradient(135deg, hsl(272,56%,30%) 0%, hsl(272,56%,18%) 100%)`;
+  const isHome = variant === "home";
+  const minHeight = isHome ? 300 : 220;
+  const paddingTop = isHome ? 40 : 80;
+  const resolvedTitleSize = titleSize || (isHome ? 56 : 40);
   return (
-    <div style={{ position: "relative", minHeight: 240, overflow: "hidden", marginBottom: 16 }}>
+    <div style={{ position: "relative", minHeight, overflow: "hidden", marginBottom: 16 }}>
       {showImage ? (
-        <img src={image} alt="" loading="lazy" onError={() => setImgError(true)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", filter: "brightness(0.7)" }} />
+        <img src={image} alt="" loading="lazy" onError={() => setImgError(true)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", filter: "brightness(0.75)" }} />
       ) : (
-        <div style={{ position: "absolute", inset: 0, background: isUrl ? fallbackGradient : image, filter: "brightness(0.7)" }} />
+        <div style={{ position: "absolute", inset: 0, background: isUrl ? fallbackGradient : image, filter: "brightness(0.75)" }} />
       )}
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.45) 0%, rgba(0,0,0,.05) 50%, rgba(0,0,0,.15) 100%)" }} />
-      <div style={{ position: "relative", padding: "80px 20px 24px", display: "flex", flexDirection: "column", justifyContent: "flex-end", minHeight: 240 }}>
-        <h1 style={{ fontFamily: "'Darker Grotesque', serif", fontSize: 34, fontWeight: 600, color: "#fff", margin: 0, lineHeight: 1.1 }}>{title}</h1>
-        {subtitle && <p style={{ fontSize: 13, color: "rgba(255,255,255,.75)", margin: "6px 0 0", maxWidth: 280 }}>{subtitle}</p>}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.35) 0%, rgba(0,0,0,.04) 50%, rgba(0,0,0,.12) 100%)" }} />
+      {isHome && <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "55%", background: "linear-gradient(to top, rgba(255,255,255,.92) 0%, rgba(255,255,255,.6) 45%, rgba(255,255,255,0) 100%)" }} />}
+      <div style={{ position: "relative", padding: `${paddingTop}px 20px 24px`, display: "flex", flexDirection: "column", justifyContent: "flex-end", minHeight }}>
+        <h1 style={{ fontFamily: "'Darker Grotesque', serif", fontSize: resolvedTitleSize, fontWeight: isHome ? 900 : 600, letterSpacing: isHome ? "-0.02em" : "normal", color: "#fff", margin: 0, lineHeight: isHome ? 1.0 : 1.1, textShadow: "0 2px 14px rgba(0,0,0,0.45)" }}>{title}</h1>
+        {subtitle && <p style={{ fontSize: 13, color: isHome ? "#3a3a44" : "rgba(255,255,255,.85)", margin: "6px 0 0", maxWidth: "85%", textShadow: isHome ? "none" : "0 1px 6px rgba(0,0,0,0.35)" }}>{subtitle}</p>}
       </div>
     </div>
   );
@@ -361,9 +366,9 @@ function HomePage() {
 
   return (
     <div>
-      <PageHero image={STUDIO_IMAGES.home} title={<>{STUDIO_CONFIG.heroLine1}<br/><span style={{ color: T.accent, fontStyle: "italic" }}>{STUDIO_CONFIG.heroLine2}</span></>} subtitle={STUDIO_CONFIG.description} />
+      <PageHero image={STUDIO_IMAGES.home} title={<>{STUDIO_CONFIG.heroLine1}<br/><span style={{ color: T.accent, fontStyle: "italic" }}>{STUDIO_CONFIG.heroLine2}</span></>} subtitle={STUDIO_CONFIG.description} variant="home" />
 
-      <section style={{ padding: "0 16px", marginTop: -16, position: "relative", zIndex: 10 }}>
+      <section style={{ padding: "20px 16px 0", position: "relative", zIndex: 10 }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
           {[
             { icon: Calendar, label: "Reserve", page: "schedule", color: T.accent },
@@ -471,7 +476,7 @@ function ClassesPage() {
   return (
     <div>
       <PageHero image={STUDIO_IMAGES.classes} title="Classes" subtitle="Dynamic Power, Essential Power, Slow Flow, Flow + Mellow, and Maven Mellow" />
-      <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ padding: "20px 16px 0", display: "flex", flexDirection: "column", gap: 12 }}>
         {all.map(p => <PracticeCard key={p.id} practice={p} expanded={exp === p.id} onToggle={() => setExp(exp === p.id ? null : p.id)} />)}
       </div>
     </div>
@@ -487,7 +492,7 @@ function SchedulePage() {
   return (
     <div>
       <PageHero image={STUDIO_IMAGES.schedule} title="Schedule" subtitle="Reserve your spot — classes fill up fast" />
-      <div style={{ padding: "16px 16px 0" }}>
+      <div style={{ padding: "20px 16px 0" }}>
         <div style={{ display: "flex", gap: 4, marginBottom: 16, overflowX: "auto", paddingBottom: 4 }}>
           {days.map((d, i) => (
             <button key={d} onClick={() => setSelectedDay(i)} style={{ padding: "8px 14px", borderRadius: 8, border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", background: selectedDay === i ? T.accent : T.bgDim, color: selectedDay === i ? "#fff" : T.textMuted }}>{d}</button>
@@ -527,7 +532,7 @@ function PracticePage() {
   return (
     <div>
       <PageHero image={STUDIO_IMAGES.practice} title="My Practice" subtitle="Track your journey and celebrate growth" />
-      <div style={{ padding: "16px 16px 0" }}>
+      <div style={{ padding: "20px 16px 0" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 20 }}>
           {[
             { icon: Flame, val: streakDays, label: "Day Streak", color: T.accent, ghost: T.accentGhost, bdr: T.accentBorder },
@@ -611,7 +616,7 @@ function CommunityPage() {
   return (
     <div>
       <PageHero image={STUDIO_IMAGES.community} title="Community" subtitle="Celebrate each other's practice" />
-      <div style={{ padding: "16px 16px 0" }}>
+      <div style={{ padding: "20px 16px 0" }}>
         {STUDIO_CONFIG.features.guestPasses && (
           <div style={{ background: `linear-gradient(135deg, ${T.bg}, hsl(30,20%,14%))`, borderRadius: 14, padding: "18px", marginBottom: 20, color: "#fff" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}><Gift size={20} color={T.accent} /><h3 style={{ fontFamily: "'Darker Grotesque', serif", fontSize: 18, margin: 0, fontWeight: 600 }}>Guest Passes</h3></div>
@@ -647,7 +652,7 @@ function TeachersPage() {
   return (
     <div>
       <PageHero image={STUDIO_IMAGES.teachers} title="Teachers" subtitle="Expert instructors with unique flair in every class" />
-      <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ padding: "20px 16px 0", display: "flex", flexDirection: "column", gap: 12 }}>
         {TEACHERS.map(teacher => {
           const expanded = expandedTeacher === teacher.id;
           return (
@@ -684,7 +689,7 @@ function MembershipPage() {
   return (
     <div>
       <PageHero image={STUDIO_IMAGES.membership} title="Membership" subtitle="Find your path to practice" />
-      <div style={{ padding: "16px 16px 0", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ padding: "20px 16px 0", display: "flex", flexDirection: "column", gap: 12 }}>
         {MEMBERSHIP_TIERS.map(tier => (
           <div key={tier.id} style={{ background: T.bgCard, border: `1px solid ${tier.popular ? T.accent : T.border}`, borderRadius: 14, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
             {tier.popular && <div style={{ position: "absolute", top: 12, right: -28, background: T.accent, color: "#fff", fontSize: 10, fontWeight: 700, padding: "3px 32px", transform: "rotate(45deg)", textTransform: "uppercase" }}>Popular</div>}
@@ -708,7 +713,7 @@ function EventsPage() {
   return (
     <div>
       <PageHero image={STUDIO_IMAGES.events} title="Events" subtitle="Workshops, retreats, trainings, and special offerings" />
-      <div style={{ padding: "16px 16px 0" }}>
+      <div style={{ padding: "20px 16px 0" }}>
         {EVENTS.map(ev => (
           <div key={ev.id} style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 14, overflow: "hidden", marginBottom: 16 }}>
             <div style={{ background: `linear-gradient(135deg, ${T.bg}, hsl(30,20%,14%))`, padding: "20px 18px", color: "#fff" }}>
@@ -1061,9 +1066,9 @@ function NotificationsModal({ onClose }) {
 // ═══════════════════════════════════════════════════════════════
 //  MAIN APP
 // ═══════════════════════════════════════════════════════════════
-export default function App({ onAdminChange }) {
-  const [page, setPage] = useState("home");
-  const [isAdmin, setIsAdmin] = useState(false);
+export default function App({ onEnterAdmin, onExitAdmin, startInAdmin = false }) {
+  const [page, setPage] = useState(startInAdmin ? "admin-dashboard" : "home");
+  const [isAdmin, setIsAdmin] = useState(startInAdmin);
   const [showMore, setShowMore] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -1076,9 +1081,8 @@ export default function App({ onAdminChange }) {
   const openReservation = useCallback((classData) => { setReservationClass(classData); }, []);
   const celebrateFeed = useCallback((feedId) => { setFeedCelebrations(prev => ({ ...prev, [feedId]: (prev[feedId] || 0) + 1 })); }, []);
 
-  useEffect(() => {
-    if (onAdminChange) onAdminChange(isAdmin);
-  }, [isAdmin, onAdminChange]);
+  const enterAdmin = () => { if (onEnterAdmin) { onEnterAdmin(); } else { setIsAdmin(true); setPage("admin-dashboard"); } };
+  const exitAdmin = () => { if (onExitAdmin) { onExitAdmin(); } else { setIsAdmin(false); setPage("home"); } };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -1087,13 +1091,13 @@ export default function App({ onAdminChange }) {
 
   const mainTabs = [
     { id: "home", label: "Home", icon: Home },
-    { id: "classes", label: "Classes", icon: Wind },
     { id: "schedule", label: "Schedule", icon: Calendar },
     { id: "practice", label: "Practice", icon: TrendingUp },
+    { id: "community", label: "Community", icon: Heart },
     { id: "more", label: "More", icon: Menu },
   ];
   const moreItems = [
-    { id: "community", label: "Community", icon: Heart },
+    { id: "classes", label: "Classes", icon: Wind },
     { id: "teachers", label: "Teachers", icon: Users },
     { id: "membership", label: "Membership", icon: CreditCard },
     { id: "events", label: "Events", icon: CalendarDays },
@@ -1152,7 +1156,7 @@ export default function App({ onAdminChange }) {
               })}
             </nav>
             <div style={{ borderTop: "1px solid #e5e7eb", padding: "8px 6px" }}>
-              <button onClick={() => { setIsAdmin(false); setPage("home"); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 10px", borderRadius: 8, border: "none", background: "transparent", color: "#6b7280", fontSize: 12, cursor: "pointer", textAlign: "left" }}><LogOut size={16} /><span>Exit Admin</span></button>
+              <button onClick={exitAdmin} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 10px", borderRadius: 8, border: "none", background: "transparent", color: "#6b7280", fontSize: 12, cursor: "pointer", textAlign: "left" }}><LogOut size={16} /><span>Exit Admin</span></button>
             </div>
           </aside>
           <main style={{ flex: 1, padding: 24, overflow: "auto" }}>{renderPage()}</main>
@@ -1173,7 +1177,7 @@ export default function App({ onAdminChange }) {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <button onClick={() => { setIsAdmin(true); setPage("admin-dashboard"); }} style={{ padding: 8, borderRadius: 8, border: "none", background: "transparent", cursor: "pointer", color: T.accent }}><Shield size={20} /></button>
+            <button onClick={enterAdmin} style={{ padding: 8, borderRadius: 8, border: "none", background: "transparent", cursor: "pointer", color: T.accent }}><Shield size={20} /></button>
             <button onClick={() => setShowNotifications(true)} style={{ padding: 8, borderRadius: 8, border: "none", background: "transparent", cursor: "pointer", color: "#fff", position: "relative" }}><Bell size={20} />{unreadCount > 0 && <span style={{ position: "absolute", top: 4, right: 4, width: 14, height: 14, borderRadius: "50%", background: T.accent, fontSize: 9, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>{unreadCount}</span>}</button>
             <button onClick={() => setShowSettings(true)} style={{ padding: 8, borderRadius: 8, border: "none", background: "transparent", cursor: "pointer", color: "#fff" }}><Settings size={20} /></button>
           </div>
